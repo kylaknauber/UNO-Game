@@ -764,7 +764,7 @@ function App() {
                     <main
                         style={{ opacity: playerPlacedWildCard || showMessageBoxInit ? 0.3 : 1 }}
                         className="main-container">
-                        <div
+                        <div title="Opponent's cards"
                             style={{
                                 backgroundColor: !playerTurn ? "rgba(255, 255, 255, 0.2)" : "rgba(0,0,0, 0.1)",
                                 boxShadow: !playerTurn ? "box-shadow : rgba(255, 255, 255, 0.2) 0px 5px 15px" : "box-shadow: 0 0 10px rgba(0, 0, 0, 0.2)"   }}
@@ -787,7 +787,7 @@ function App() {
                                         <p>Choose a different card!</p>
                                     </>}
                             </div>}
-                        <div
+                        <div title="Your cards"
                             style={{
                                 backgroundColor: playerTurn ? "rgba(255, 255, 255, 0.2)" : "rgba(0,0,0, 0.1)",
                                 boxShadow: playerTurn ? "box-shadow : rgba(255, 255, 255, 0.2) 0px 5px 15px" : "box-shadow: 0 0 10px rgba(0, 0, 0, 0.2)"

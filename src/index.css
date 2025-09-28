@@ -306,7 +306,7 @@ div.player-card > img {
     display: flex;
     justify-content: center;
     margin-top: 20px;
-    
+
 }
 
 .content-container {
@@ -317,26 +317,28 @@ div.player-card > img {
     align-items: center;
     justify-content: center;
     margin-top: 50px;
-    width: 500px;
-    height: 400px;
+    width: 600px;
+    height: 500px;
     background-color: antiquewhite;
     border-radius: 20px;
     border: 7px solid white;
+    padding: 20px;
 }
 
     .content-container > .title {
         font-weight: 800;
-        font-size: 30px;
+        font-size: 35px;
         margin-bottom: 20px;
     }
 
     .content-container > img {
-        width: 100px;
-        height: 100px;
+        width: 150px;
+        height: 150px;
         opacity: 0;
         animation: fadeIn 2s forwards;
         animation-delay: 2s;
         margin-bottom: 20px;
+        cursor: pointer;
     }
 
 @keyframes fadeIn {
@@ -360,6 +362,78 @@ div.player-card > img {
     opacity: 0;
     animation: fadeIn 3s forwards;
     animation-delay: 2s;
+    display: flex;
+    gap: 2px;
+}
+
+.text-wrapper > span {
+    font-size: 20px;
+    animation: wave 1.5s ease-in-out infinite;
+}
+
+@keyframes wave {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.text-wrapper span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.text-wrapper span:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.text-wrapper span:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.text-wrapper span:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.text-wrapper span:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+.text-wrapper span:nth-child(6) {
+    animation-delay: 0.5s;
+}
+
+.text-wrapper span:nth-child(7) {
+    animation-delay: 0.6s;
+}
+
+.text-wrapper span:nth-child(8) {
+    animation-delay: 0.7s;
+}
+
+.text-wrapper span:nth-child(9) {
+    animation-delay: 0.8s;
+}
+
+.text-wrapper span:nth-child(10) {
+    animation-delay: 0.9s;
+}
+
+.text-wrapper span:nth-child(11) {
+    animation-delay: 1s;
+}
+
+.text-wrapper span:nth-child(12) {
+    animation-delay: 1.1s;
+}
+
+.text-wrapper span:nth-child(13) {
+    animation-delay: 1.2s;
+}
+
+.text-wrapper span:nth-child(14) {
+    animation-delay: 1.3s;
 }
 
 .message-box {
@@ -465,8 +539,25 @@ div.player-card > img {
     
     .button-container {
         margin-top: 20px;
-        
+        display: flex;
+        gap: 10px;
     }
+
+        .button-container > button {
+            border: none;
+            font-family: "Comfortaa", sans-serif;
+            font-size: 16px;
+            padding: 5px;
+            background-color: #550000;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+            .button-container > button:hover {
+                filter: drop-shadow(1px 1px 5px #550000);
+            }
+
 
 
 
@@ -557,6 +648,21 @@ div.player-card > img {
     gap: 5px;
 }
 
+    .question > div > button {
+        border: none;
+        font-family: "Comfortaa", sans-serif;
+        font-size: 12px;
+        padding: 5px;
+        background-color: #550000;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+    }
+
+        .question > div > button:hover {
+            filter: drop-shadow(1px 1px 5px #550000);
+        }
+
 .form-container {
     display: flex;
     flex-direction: column;
@@ -597,9 +703,19 @@ div.player-card > img {
     outline: none;
     border-color: #550000;
 }
-.form-container > form > button {
-    align-self: center;
-    margin-top: 10px;
+    .form-container > form > button {
+        align-self: center;
+        margin-top: 10px;
+        border: none;
+        font-family: "Comfortaa", sans-serif;
+        font-size: 13px;
+        padding: 5px;
+        background-color: #550000;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+    }
 
-
-}
+        .form-container > form > button:hover {
+            filter: drop-shadow(1px 1px 5px #550000);
+        }
