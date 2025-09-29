@@ -8,7 +8,7 @@ export default function Card(props) {
             {props.src && <img
                 src={props.src}
                 alt={props.alt}
-                onClick={() => props.playCard(props.card)} disabled={props.disabled}></img>}
+                onClick={() => props.onCardClick(props.card)} disabled={props.disabled}></img>}
         </div>
     )
 }
