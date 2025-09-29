@@ -484,14 +484,15 @@ div.player-card > img {
         display: flex;
         flex-direction: column;
         margin-top: 50px;
-        width: 500px;
-        height: 400px;
+        width: 600px;
+        height: 500px;
         background-color: antiquewhite;
         border-radius: 20px;
         border: 7px solid white;
         opacity: 0;
         animation: fadeIn 1s forwards;
         position: relative;
+        align-items: center;
     }
 
     .score {
@@ -504,13 +505,13 @@ div.player-card > img {
         display: flex;
         flex-direction: column;
         align-items: center;
-        font-size: 13px;
+        font-size: 15px;
     }
 
         .score > h5 {
             margin: 0;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 15px;
         }
 
     .score-value {
@@ -523,18 +524,18 @@ div.player-card > img {
         align-items: center;
         display: flex;
         flex-direction: column;
-
+        margin-top: 40px;
     }
 
         .info > .title {
             font-weight: 800;
-            font-size: 30px;
+            font-size: 35px;
             margin-bottom: 20px;
         }
 
         .info > p {
             font-weight: 600;
-            font-size: 20px;
+            font-size: 25px;
         }
     
     .button-container {
@@ -546,7 +547,7 @@ div.player-card > img {
         .button-container > button {
             border: none;
             font-family: "Comfortaa", sans-serif;
-            font-size: 16px;
+            font-size: 20px;
             padding: 5px;
             background-color: #550000;
             border-radius: 5px;
@@ -555,7 +556,7 @@ div.player-card > img {
         }
 
             .button-container > button:hover {
-                filter: drop-shadow(1px 1px 5px #550000);
+                filter: drop-shadow(1px 1px 10px #550000);
             }
 
 

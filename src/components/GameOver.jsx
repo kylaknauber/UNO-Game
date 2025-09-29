@@ -18,18 +18,18 @@ export default function GameOver(props) {
             <div
                 style={{ opacity: props.isQuit ? 0.3 : 1 }}
                 className="gameover-container">
-            <div>
-                <div className="score">
-                    <h5>Your Score</h5>
-                    <p className="score-value">{props.score === 1 ? `${props.score} game won` : `${props.score} games won`}</p>
-                </div>
-                <div className="info">
-                    <p className="title">Game Over!</p>
-                    <p>{props.isWinner ? "You win!" : "You lose. Better luck next time."}</p>
-                    <div className="button-container">
-                        <button onClick={props.restart}>Play Again</button>
-                        <button onClick={props.quit}>Exit Game</button>
+                <div>
+                    <div className="score">
+                        <h5>Your Score</h5>
+                        <p className="score-value">{props.score === 1 ? `${props.score} game won` : `${props.score} games won`}</p>
                     </div>
+                    <div className="info">
+                        <p className="title">Game Over!</p>
+                        <p>{props.isWinner ? "You win!" : "You lose. Better luck next time."}</p>
+                        <div className="button-container">
+                            <button onClick={props.restart}>Play Again</button>
+                            <button onClick={props.quit}>Exit Game</button>
+                        </div>
                     </div>
                     
                 </div>
