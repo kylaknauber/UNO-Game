@@ -12,7 +12,6 @@ import Card from "./components/Card"
 import Header from './components/Header'
 import Start from './components/Start'
 import GameOver from "./components/GameOver"
-import { db } from "./firebase"
 
 function App() {
     const shuffledCards = shuffleDeck(cards)
@@ -72,6 +71,7 @@ function App() {
         return shuffledCards.slice(14)
     }
 
+    // Play card function for player
     function playCard(card) {
         console.log(card)
         setPlayerPlacedWildCard(false)
@@ -80,15 +80,7 @@ function App() {
 
         // Only allow plays when player's turn 
         if (playerTurn) {
-            // May need fixed
-            if (usedDeck.length > 0 && !draw2Helper && usedDeck[usedDeck.length - 1].value === "draw 2") {
-                console.log("player draws two, opponent should not " + draw2Helper)
-                draw2()
-                setDraw2Helper(false)
-                setPlayerTurn(false)
-            }
-
-            else if (usedDeck.length === 0 || card.value === "wild" || card.color === usedDeck[usedDeck.length - 1].color || card.value === usedDeck[usedDeck.length - 1].value) {
+            if (usedDeck.length === 0 || card.value === "wild" || card.color === usedDeck[usedDeck.length - 1].color || card.value === usedDeck[usedDeck.length - 1].value) {
                 setMessageNeeded(false)
                 setCurrentPlayerCards(prevCards => {
                     return (
@@ -123,12 +115,10 @@ function App() {
                 setMessageNeeded(true)
             }
             setCount(prev => prev + 1)
-            //setDraw2Helper(false)
         }
     }
 
-    const playerCardsAfterPlus2 = currentPlayerCards.length + 2
-
+    // Draw card function for player
     function drawCard(card) {
         // Only allow draws when it is player's turn
         if (playerTurn) {
@@ -164,33 +154,13 @@ function App() {
                     return (
                         prevDeck.filter(item => item.id !== card.id)
                     )
-                })
-                if (usedDeck.length > 0 && !draw2Helper && usedDeck[usedDeck.length - 1].value === "draw 2") {
-                    console.log("player draws two, opponent should not " + draw2Helper)
-                    draw2()
-                    //setDraw2Helper(false)
-                    //setPlayerTurn(false)
-                    console.log(playerCardsAfterPlus2)
-                    if (currentPlayerCards.length === playerCardsAfterPlus2) {
-                        setTimeout(() => setPlayerTurn(false), 500)
-                        console.log("done with draw 2")
-                    }
-                    else {
-                        setPlayerTurn(true)
-                    }
-                    console.log("in draw 2 for player!")
-                }
-
-                else {
-                    setTimeout(() => setPlayerTurn(false), 500)
-                }
-
+                })             
+                setTimeout(() => setPlayerTurn(false), 500)
             }
             setCount(prev => prev + 1)
             setPlayerPlacedWildCard(false)
             setPlayerPickedColor(false)
             setTimeout(() => setPlayerTurn(false), 500)
-            //setDraw2Helper(false)
         }
     }
 
@@ -198,9 +168,9 @@ function App() {
         setPlayerPlacedWildCard(false)
         setPlayerPickedColor(false)
 
-        // for draw 2
+        // If player places draw 2 card, then this executes for the opponent
         if (usedDeck.length > 0 && draw2Helper && !opponentJustDrew2 && usedDeck[usedDeck.length - 1].value === "draw 2") {
-            console.log("HELLO")
+            // Updates remaining deck before it runs out
             if (remainingDeck.length === 2) {
                 setRemainingDeck(prevDeck => {
                     const bottomOfUsedDeck = usedDeck.filter(item => item !== usedDeck[usedDeck.length - 1])
@@ -263,6 +233,10 @@ function App() {
                     //return () => clearTimeout(timerForFunc)
                     setTimeout(() => setPlayerTurn(true), 500)
                 }
+                else if (currentOpponentCards[i].value === "draw 2") {
+                    console.log("opponent places draw 2")
+                    setTimeout(() => playerDraw2(), 1000);
+                }
                 else {
                     setTimeout(() => setPlayerTurn(true), 500)
                 }
@@ -272,15 +246,10 @@ function App() {
             else if (i === currentOpponentCards.length - 1) {
                 opponentDrawCard()
             }
-        }}
-      
-       
-       
-       
+        }}   
     }
 
     function opponentDrawCard() {
-        setDisableOnClick(true)
         setPlayerPlacedWildCard(false)
         setPlayerPickedColor(false)
 
@@ -318,7 +287,9 @@ function App() {
         setDraw2Helper(true)
     }
 
-    // ONLY WORK FOR SINGLE PLAYER
+    /**
+     * Special card functions
+     */
     function skipCard() {
         if (!playerTurn) {
             setPlayerTurn(false)
@@ -327,7 +298,6 @@ function App() {
             setPlayerTurn(true)
         }
     }
-
     function reverseCard() {
         if (playerTurn) {
             setPlayerTurn(true)
@@ -337,34 +307,105 @@ function App() {
         }
     }
 
-    function draw2() {
-        if (playerTurn) {
-            let lengthAfterDraw2 = currentPlayerCards.length + 2
-            console.log(lengthAfterDraw2)
-            if (currentPlayerCards.length > lengthAfterDraw2) {
-                console.log(currentPlayerCards.length)
-            }
-            else {
-                setPlayerTurn(false)
-            }
+    // Player draws two, computer automatically gives player the top two cards from the deck
+    function playerDraw2() {
+        if (remainingDeck.length === 2) {
+            setRemainingDeck(prevDeck => {
+                prevDeck.forEach(card => {
+                    if (card.value === "wild") {
+                        card.color = "multiple"
+                        card.src = "./src/images/Wild.png"
+                    }
+                })
+                const bottomOfUsedDeck = usedDeck.filter(item => item !== usedDeck[usedDeck.length - 1])
+                const bottomShuffled = shuffleDeck(bottomOfUsedDeck)
+                return (
+                    [...prevDeck, ...bottomShuffled]
+                )
+            })
+            setUsedDeck([usedDeck[usedDeck.length - 1]])
+        }
 
-            console.log(currentPlayerCards.length)
+        if (remainingDeck.length > 0) {
+            setCurrentPlayerCards(prevCards => {
+                return (
+                    [...prevCards, remainingDeck[0], remainingDeck[1]]
+                )
+            })
+            setRemainingDeck(prevDeck => {
+                console.log(remainingDeck[0] + " " + remainingDeck[1])
+                return (
+                    prevDeck.filter(item => item.id !== remainingDeck[0].id && item.id !== remainingDeck[1].id)
+                )
+            })
+            setTimeout(() => setPlayerTurn(false), 500)
         }
     }
 
-    function opponentWild(wild) {
-        const colors = ["blue", "green", "red", "yellow"]
-        const randomColor = Math.floor(Math.random() * 4)
-
-        /**
-         * const wild = usedDeck[usedDeck.length - 1]
+    // Function for when the player picks the color they want the deck to be after placing a wild card
+    function changeColor(id) {
+        const wild = usedDeck[usedDeck.length - 1]
         setUsedDeck(prevUsed => {
             return (
                 prevUsed.filter(card => card !== wild)
             )
         })
-         */
-        //const wild = usedDeck[usedDeck.length - 1]
+        if (id === 1) { // BLUE
+            wild.src = BluePlain
+            wild.color = "blue"
+            setUsedDeck(prevUsed => {
+                return (
+                    [...prevUsed, wild]
+                )
+            })
+            setTimeout(() => setPlayerTurn(false), 500)
+            setPlayerPickedColor(true)
+            setPlayerPlacedWildCard(false)
+        }
+        else if (id === 2) { // GREEN
+            wild.src = GreenPlain
+            wild.color = "green"
+            setUsedDeck(prevUsed => {
+                return (
+                    [...prevUsed, wild]
+                )
+            })
+            setTimeout(() => setPlayerTurn(false), 500)
+            setPlayerPickedColor(true)
+            setPlayerPlacedWildCard(false)
+        }
+        else if (id === 3) { // RED
+            wild.src = RedPlain
+            wild.color = "red"
+            setUsedDeck(prevUsed => {
+                return (
+                    [...prevUsed, wild]
+                )
+            })
+            setTimeout(() => setPlayerTurn(false), 500)
+            setPlayerPickedColor(true)
+            setPlayerPlacedWildCard(false)
+        }
+        else if (id === 4) { // YELLOW
+            wild.src = YellowPlain
+            wild.color = "yellow"
+            setUsedDeck(prevUsed => {
+                return (
+                    [...prevUsed, wild]
+                )
+            })
+            setTimeout(() => setPlayerTurn(false), 500)
+            setPlayerPickedColor(true)
+            setPlayerPlacedWildCard(false)
+        }
+
+    }
+
+    // Function which determines which color the opponent chooses to make the deck after placing a wild card
+    function opponentWild(wild) {
+        const colors = ["blue", "green", "red", "yellow"]
+        const randomColor = Math.floor(Math.random() * 4)
+
         console.log(wild)
         setUsedDeck(prevUsed => {
             return (
@@ -409,21 +450,10 @@ function App() {
             })
         }
     }
-
-    useEffect(() => {
-        if(!startGame || gameOver || showMessageBoxInit) return
-        console.log("in use Effect")
-        if (!playerTurn && count === 0) {
-            const timerForFunc = setTimeout(opponentPlayCard, 5000);
-            return () => clearTimeout(timerForFunc)
-        }
-        else if (!playerTurn && !gameOver) {
-            const timerForFunc = setTimeout(opponentPlayCard, 3000);
-            return () => clearTimeout(timerForFunc)
-        }
-    }, [currentPlayerCards, opponentSpecialCard, playerPickedColor, playerTurn, startGame, gameOver, showMessageBoxInit])
     
-
+    /**
+     * React elements for player, opponent, remaining deck, used deck, wild card color picker elements, and the initial turn display box
+     */
     const playerCardElements = currentPlayerCards.map(card => {
         return (
             <Card
@@ -439,7 +469,6 @@ function App() {
             />
         )
     })
-
     const opponentCardElements = currentOpponentCards.map(card => {
         return (
             <Card
@@ -453,8 +482,6 @@ function App() {
         )
     })
 
-
-    const [flyCard, setFlyCard] = useState(null)
     function updateRemainingDeck() {
         const card = remainingDeck[0]
         const showFront = flipPhase === "reveal"
@@ -530,7 +557,6 @@ function App() {
              */
         )
     }
-
     const deck = updateRemainingDeck()
 
     function updateUsedDeck() {
@@ -546,26 +572,7 @@ function App() {
             )
         }
     }
-
     const used = updateUsedDeck()
-
-    function beginGameButton() {
-        setStartGame(prev => !prev)
-    }
-
-    function quitGame() {
-        setQuit(true)
-    }
-
-    function playAgain() {
-        setCurrentOpponentCards(initialOpponentCards())
-        setCurrentPlayerCards(initialPlayerCards())
-        setRemainingDeck(initialRemainingDeck())
-        setUsedDeck([])
-        setCount(0)
-        setShowMessageBoxInit(true)
-        setInitTurn(null)
-    }
 
     function wildCardColorPicker() {
         return (
@@ -598,66 +605,82 @@ function App() {
             </div>
         )
     }
+    const wildCardColorPickerElements = wildCardColorPicker()
 
-    function changeColor(id) {
-        const wild = usedDeck[usedDeck.length - 1]
-        setUsedDeck(prevUsed => {
-            return (
-                prevUsed.filter(card => card !== wild)
-            )
-        })
-        if (id === 1) { // BLUE
-            wild.src = BluePlain
-            wild.color = "blue"
-            setUsedDeck(prevUsed => {
-                return (
-                    [...prevUsed, wild]
-                )
-            })
-            setTimeout(() => setPlayerTurn(false), 500)
-            setPlayerPickedColor(true)
-            setPlayerPlacedWildCard(false)
-        }
-        else if (id === 2) { // GREEN
-            wild.src = GreenPlain
-            wild.color = "green"
-            setUsedDeck(prevUsed => {
-                return (
-                    [...prevUsed, wild]
-                )
-            })
-            setTimeout(() => setPlayerTurn(false), 500)
-            setPlayerPickedColor(true)
-            setPlayerPlacedWildCard(false)
-        }
-        else if (id === 3) { // RED
-            wild.src = RedPlain
-            wild.color = "red"
-            setUsedDeck(prevUsed => {
-                return (
-                    [...prevUsed, wild]
-                )
-            })
-            setTimeout(() => setPlayerTurn(false), 500)
-            setPlayerPickedColor(true)
-            setPlayerPlacedWildCard(false)
-        }
-        else if (id === 4) { // YELLOW
-            wild.src = YellowPlain
-            wild.color = "yellow"
-            setUsedDeck(prevUsed => {
-                return (
-                    [...prevUsed, wild]
-                )
-            })
-            setTimeout(() => setPlayerTurn(false), 500)
-            setPlayerPickedColor(true)
-            setPlayerPlacedWildCard(false)
-        }
-        
+    function determineInitialTurn() {
+        return (
+            <motion.div
+                className="init-turn-container"
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0, }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+                <p>Determining turn</p>
+                <p>{!initTurn ? "..." : `${initTurn}` + "'s turn!"}</p>
+            </motion.div>
+        )
+    }
+    const initTurnElement = determineInitialTurn()
+
+    /**
+     * Functions for the buttons in the game
+     */
+    function beginGameButton() {
+        setStartGame(prev => !prev)
     }
 
-    const wildCardColorPickerElements = wildCardColorPicker()
+    // Player decides to click "Exit Game"
+    function quitGame() {
+        setQuit(true)
+    }
+
+    // Player decides to click "Play Again"
+    function playAgain() {
+        setCurrentOpponentCards(initialOpponentCards())
+        setCurrentPlayerCards(initialPlayerCards())
+        setRemainingDeck(initialRemainingDeck())
+        setUsedDeck([])
+        setCount(0)
+        setShowMessageBoxInit(true)
+        setInitTurn(null)
+    }
+
+    // Player decides to click "Yes" to save their score
+    function saveScore() {
+        setIsSaveScore(true)
+    }
+
+    // Player decides to click "No" to decline saving their score, and simply exits the game
+    function noSaveScore() {
+        setIsSaveScore(false)
+        setStartGame(false)
+        setCurrentOpponentCards(initialOpponentCards())
+        setCurrentPlayerCards(initialPlayerCards())
+        setRemainingDeck(initialRemainingDeck())
+        setUsedDeck([])
+        setCount(0)
+        setScore(0)
+        setShowMessageBoxInit(true)
+        setInitTurn(null)
+        setQuit(false)
+    }
+
+    /**
+     * useEffect functions
+     */
+    useEffect(() => {
+        if (!startGame || gameOver || showMessageBoxInit) return
+        console.log("in use Effect")
+        if (!playerTurn && count === 0) {
+            const timerForFunc = setTimeout(opponentPlayCard, 5000);
+            return () => clearTimeout(timerForFunc)
+        }
+        else if (!playerTurn && !gameOver) {
+            const timerForFunc = setTimeout(opponentPlayCard, 3000);
+            return () => clearTimeout(timerForFunc)
+        }
+    }, [currentPlayerCards, opponentSpecialCard, playerPickedColor, playerTurn, startGame, gameOver, showMessageBoxInit])
 
     useEffect(() => {
         if (startGame && !gameOver) {
@@ -676,60 +699,16 @@ function App() {
         }
     }, [startGame, gameOver, playerTurn])
 
-    function determineInitialTurn() {
-
-        //const timer = setTimeout(setShowMessageBoxInit(false), 2000)
-        return (
-            /*<div className="init-turn-container">
-                <p>Determining turn</p>
-                <p>{!initTurn ? "..." : `${initTurn}` + "'s turn!"}</p>
-            </div>
-            */
-            <motion.div
-                className="init-turn-container"
-                initial={{ y: 100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 100, opacity: 0, }}
-                transition={{ duration: 0.4, ease: "easeOut"}}
-            >
-                <p>Determining turn</p>
-                <p>{!initTurn ? "..." : `${initTurn}` + "'s turn!"}</p>
-            </motion.div>
-        )
-    }
-
-    const initTurnElement = determineInitialTurn()
-    
-    console.log(currentPlayerCards)
-    console.log(currentOpponentCards)
-    console.log(usedDeck)
-    console.log(remainingDeck)
-    console.log("Player turn? " + playerTurn)
-    console.log("Draw 2 Helper: " + draw2Helper)
-
     useEffect(() => {
         if (gameOver && playerWon) {
             setScore(prev => prev + 1)
         }
     }, [startGame, playerWon, opponentWon, gameOver])
 
-    function saveScore() {
-        setIsSaveScore(true)
-    }
-
-    function noSaveScore() {
-        setIsSaveScore(false)
-        setStartGame(false)
-        setCurrentOpponentCards(initialOpponentCards())
-        setCurrentPlayerCards(initialPlayerCards())
-        setRemainingDeck(initialRemainingDeck())
-        setUsedDeck([])
-        setCount(0)
-        setScore(0)
-        setShowMessageBoxInit(true)
-        setInitTurn(null)
-        setQuit(false)
-    }
+    console.log(currentPlayerCards)
+    console.log(currentOpponentCards)
+    console.log(usedDeck)
+    console.log(remainingDeck)
 
     return (
         <>
