@@ -30,7 +30,6 @@ function App() {
     const [playerTurn, setPlayerTurn] = useState(randomChoice === 0 ? true : false)
     const [count, setCount] = useState(0)
     const [score, setScore] = useState(0)
-    const [disableOnClick, setDisableOnClick] = useState(false)
     const [draw2Helper, setDraw2Helper] = useState(true)
     const [opponentSpecialCard, setOpponentSpecialCard] = useState(0)
     const [playerPlacedWildCard, setPlayerPlacedWildCard] = useState(false)
@@ -75,128 +74,130 @@ function App() {
 
     function playCard(card) {
         console.log(card)
-        setDisableOnClick(false)
         setPlayerPlacedWildCard(false)
         setPlayerPickedColor(false)
         setDraw2Helper(true)
 
-        // May need fixed
-        if (usedDeck.length > 0 && !draw2Helper && usedDeck[usedDeck.length - 1].value === "draw 2") {
-            console.log("player draws two, opponent should not " + draw2Helper)
-            draw2()
-            setDraw2Helper(false)
-            setPlayerTurn(false)
-        }
-        
-        else if (usedDeck.length === 0 || card.value === "wild" || card.color === usedDeck[usedDeck.length - 1].color || card.value === usedDeck[usedDeck.length - 1].value) {
-            setMessageNeeded(false)
-            setCurrentPlayerCards(prevCards => {
-                return (
-                    prevCards.filter(item => item.id !== card.id)
-                )
-            })
-            setUsedDeck(prevUsed => {
-                return (
-                    [...prevUsed, card]
-                )
-            })
-            if (card.value === "skip") {
-                skipCard()
+        // Only allow plays when player's turn 
+        if (playerTurn) {
+            // May need fixed
+            if (usedDeck.length > 0 && !draw2Helper && usedDeck[usedDeck.length - 1].value === "draw 2") {
+                console.log("player draws two, opponent should not " + draw2Helper)
+                draw2()
+                setDraw2Helper(false)
+                setPlayerTurn(false)
             }
-            else if (card.value === "reverse") {
-                reverseCard()
-            }
-            else if (card.value === "wild") {
-                setPlayerPlacedWildCard(true)
-            }
-            else if (card.value === "draw 2") {
-                console.log("opponent draw 2!")
-                setDraw2Helper(true)
-                setTimeout(() => setPlayerTurn(false), 500)
-                setOpponentJustDrew2(false)
+
+            else if (usedDeck.length === 0 || card.value === "wild" || card.color === usedDeck[usedDeck.length - 1].color || card.value === usedDeck[usedDeck.length - 1].value) {
+                setMessageNeeded(false)
+                setCurrentPlayerCards(prevCards => {
+                    return (
+                        prevCards.filter(item => item.id !== card.id)
+                    )
+                })
+                setUsedDeck(prevUsed => {
+                    return (
+                        [...prevUsed, card]
+                    )
+                })
+                if (card.value === "skip") {
+                    skipCard()
+                }
+                else if (card.value === "reverse") {
+                    reverseCard()
+                }
+                else if (card.value === "wild") {
+                    setPlayerPlacedWildCard(true)
+                }
+                else if (card.value === "draw 2") {
+                    console.log("opponent draw 2!")
+                    setDraw2Helper(true)
+                    setTimeout(() => setPlayerTurn(false), 500)
+                    setOpponentJustDrew2(false)
+                }
+                else {
+                    setTimeout(() => setPlayerTurn(false), 500)
+                }
             }
             else {
-                setTimeout(() => setPlayerTurn(false), 500)
+                setMessageNeeded(true)
             }
-            
-
-            
+            setCount(prev => prev + 1)
+            //setDraw2Helper(false)
         }
-        else {
-            setMessageNeeded(true)
-        }
-        setCount(prev => prev + 1)
-        //setDraw2Helper(false)
     }
 
     const playerCardsAfterPlus2 = currentPlayerCards.length + 2
 
     function drawCard(card) {
-        // Update before deck runs out!
-        if (remainingDeck.length === 2) {
-            setRemainingDeck(prevDeck => {
-                prevDeck.forEach(card => {
-                    if (card.value === "wild") {
-                        card.color = "multiple"
-                        card.src = "./src/images/Wild.png"
-                    }
+        // Only allow draws when it is player's turn
+        if (playerTurn) {
+            // Update before deck runs out!
+            if (remainingDeck.length === 2) {
+                setRemainingDeck(prevDeck => {
+                    prevDeck.forEach(card => {
+                        if (card.value === "wild") {
+                            card.color = "multiple"
+                            card.src = "./src/images/Wild.png"
+                        }
+                    })
+                    const bottomOfUsedDeck = usedDeck.filter(item => item !== usedDeck[usedDeck.length - 1])
+                    const bottomShuffled = shuffleDeck(bottomOfUsedDeck)
+                    return (
+                        [...prevDeck, ...bottomShuffled]
+                    )
                 })
-                const bottomOfUsedDeck = usedDeck.filter(item => item !== usedDeck[usedDeck.length - 1])
-                const bottomShuffled = shuffleDeck(bottomOfUsedDeck)
-                return (
-                    [...prevDeck, ...bottomShuffled]
-                )
-            })
-            setUsedDeck([usedDeck[usedDeck.length-1]])
-        }
-
-        if (remainingDeck.length > 0) {
-            if (!isAnimating) {
-                setIsFlipped(!isFlipped)
-                setIsAnimating(true)
+                setUsedDeck([usedDeck[usedDeck.length - 1]])
             }
-            setCurrentPlayerCards(prevCards => {
-                return (
-                    [...prevCards, card]
-                )
-            })
-            setRemainingDeck(prevDeck => {
-                return (
-                    prevDeck.filter(item => item.id !== card.id)
-                )
-            })
-            if (usedDeck.length > 0 && !draw2Helper && usedDeck[usedDeck.length - 1].value === "draw 2") {
-                console.log("player draws two, opponent should not " + draw2Helper)
-                draw2()
-                //setDraw2Helper(false)
-                //setPlayerTurn(false)
-                console.log(playerCardsAfterPlus2)
-                if (currentPlayerCards.length === playerCardsAfterPlus2) {
-                    setTimeout(() => setPlayerTurn(false), 500)
-                    console.log("done with draw 2")
+
+            if (remainingDeck.length > 0) {
+                if (!isAnimating) {
+                    setIsFlipped(!isFlipped)
+                    setIsAnimating(true)
                 }
+                setCurrentPlayerCards(prevCards => {
+                    return (
+                        [...prevCards, card]
+                    )
+                })
+                setRemainingDeck(prevDeck => {
+                    return (
+                        prevDeck.filter(item => item.id !== card.id)
+                    )
+                })
+                if (usedDeck.length > 0 && !draw2Helper && usedDeck[usedDeck.length - 1].value === "draw 2") {
+                    console.log("player draws two, opponent should not " + draw2Helper)
+                    draw2()
+                    //setDraw2Helper(false)
+                    //setPlayerTurn(false)
+                    console.log(playerCardsAfterPlus2)
+                    if (currentPlayerCards.length === playerCardsAfterPlus2) {
+                        setTimeout(() => setPlayerTurn(false), 500)
+                        console.log("done with draw 2")
+                    }
+                    else {
+                        setPlayerTurn(true)
+                    }
+                    console.log("in draw 2 for player!")
+                }
+
                 else {
-                    setPlayerTurn(true)
+                    setTimeout(() => setPlayerTurn(false), 500)
                 }
-                console.log("in draw 2 for player!")
-            }
 
-            else {
-                setTimeout(() => setPlayerTurn(false), 500)
             }
-            
+            setCount(prev => prev + 1)
+            setPlayerPlacedWildCard(false)
+            setPlayerPickedColor(false)
+            setTimeout(() => setPlayerTurn(false), 500)
+            //setDraw2Helper(false)
         }
-        setCount(prev => prev + 1)
-        setPlayerPlacedWildCard(false)
-        setPlayerPickedColor(false)
-        setTimeout(() => setPlayerTurn(false), 500)
-        //setDraw2Helper(false)
     }
 
     function opponentPlayCard() {
         setPlayerPlacedWildCard(false)
         setPlayerPickedColor(false)
-        setDisableOnClick(true)
+
         // for draw 2
         if (usedDeck.length > 0 && draw2Helper && !opponentJustDrew2 && usedDeck[usedDeck.length - 1].value === "draw 2") {
             console.log("HELLO")
@@ -320,7 +321,6 @@ function App() {
     // ONLY WORK FOR SINGLE PLAYER
     function skipCard() {
         if (!playerTurn) {
-            console.log("Should skip player")
             setPlayerTurn(false)
         }
         else {
@@ -342,8 +342,6 @@ function App() {
             let lengthAfterDraw2 = currentPlayerCards.length + 2
             console.log(lengthAfterDraw2)
             if (currentPlayerCards.length > lengthAfterDraw2) {
-                setDisableOnClick(true)
-                // disabling cards so they cannot play them
                 console.log(currentPlayerCards.length)
             }
             else {
@@ -438,7 +436,6 @@ function App() {
                 playCard={playCard}
                 id={card.id}
                 card={card}
-                disabled={disableOnClick}
             />
         )
     })
@@ -481,7 +478,7 @@ function App() {
                     transition={{ duration: 0.5, ease: "easeIn" }}
                     
                     onClick={() => {
-                        if (!isAnimating) {
+                        if (!isAnimating && playerTurn) {
                             setPendingDrawCard(remainingDeck[0])
                             setFlipPhase("reveal")
                             //setIsFlipped(true);
@@ -556,19 +553,7 @@ function App() {
         setStartGame(prev => !prev)
     }
 
-    // fix
     function quitGame() {
-        /**
-         * setStartGame(false)
-        setCurrentOpponentCards(initialOpponentCards())
-        setCurrentPlayerCards(initialPlayerCards())
-        setRemainingDeck(initialRemainingDeck())
-        setUsedDeck([])
-        setCount(0)
-        setScore(0)
-        setShowMessageBoxInit(true)
-        setInitTurn(null)
-         */
         setQuit(true)
     }
 
@@ -581,7 +566,6 @@ function App() {
         setShowMessageBoxInit(true)
         setInitTurn(null)
     }
-
 
     function wildCardColorPicker() {
         return (
@@ -721,12 +705,7 @@ function App() {
     console.log(usedDeck)
     console.log(remainingDeck)
     console.log("Player turn? " + playerTurn)
-    console.log("Cards disabled? " + disableOnClick)
     console.log("Draw 2 Helper: " + draw2Helper)
-
-    const opponentDeckStyle = {
-        filter: "drop-shadow(0, 0, 2em, white)"
-    }
 
     useEffect(() => {
         if (gameOver && playerWon) {
