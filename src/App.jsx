@@ -17,13 +17,15 @@ function App() {
     const shuffledCards = shuffleDeck(cards)
     const validCard = false;
 
+    // Variable used to determine whether Opponent or Player begins the game
     const randomChoice = Math.floor(Math.random() * 2)
-    //const playerTurn = randomChoice === 0 ? true : false    
 
+    // State variables for the cards
     const [currentPlayerCards, setCurrentPlayerCards] = useState(() => initialPlayerCards())
     const [currentOpponentCards, setCurrentOpponentCards] = useState(() => initialOpponentCards())
     const [remainingDeck, setRemainingDeck] = useState(() => initialRemainingDeck())
     const [usedDeck, setUsedDeck] = useState([])
+
     const [startGame, setStartGame] = useState(false)
     const [messageNeeded, setMessageNeeded] = useState(false)
     const [playerTurn, setPlayerTurn] = useState(randomChoice === 0 ? true : false)
@@ -34,10 +36,14 @@ function App() {
     const [playerPlacedWildCard, setPlayerPlacedWildCard] = useState(false)
     const [playerPickedColor, setPlayerPickedColor] = useState(false)
     const [opponentJustDrew2, setOpponentJustDrew2] = useState(false)
+
+    // State variables for animation
     const [isFlipped, setIsFlipped] = useState(false)
     const [isAnimating, setIsAnimating] = useState(false)
     const [pendingDrawCard, setPendingDrawCard] = useState(null)
     const [flipPhase, setFlipPhase] = useState("idle")
+
+    // State variables for when the game begins and ends
     const [initTurn, setInitTurn] = useState(null)
     const [showMessageBoxInit, setShowMessageBoxInit] = useState(true)
     const [quit, setQuit] = useState(false)
@@ -125,14 +131,14 @@ function App() {
             // Update before deck runs out!
             if (remainingDeck.length === 2) {
                 setRemainingDeck(prevDeck => {
-                    prevDeck.forEach(card => {
+                    const bottomOfUsedDeck = usedDeck.filter(item => item !== usedDeck[usedDeck.length - 1])
+                    const bottomShuffled = shuffleDeck(bottomOfUsedDeck)
+                    bottomShuffled.forEach(card => {
                         if (card.value === "wild") {
                             card.color = "multiple"
                             card.src = "./src/images/Wild.png"
                         }
                     })
-                    const bottomOfUsedDeck = usedDeck.filter(item => item !== usedDeck[usedDeck.length - 1])
-                    const bottomShuffled = shuffleDeck(bottomOfUsedDeck)
                     return (
                         [...prevDeck, ...bottomShuffled]
                     )
@@ -175,6 +181,12 @@ function App() {
                 setRemainingDeck(prevDeck => {
                     const bottomOfUsedDeck = usedDeck.filter(item => item !== usedDeck[usedDeck.length - 1])
                     const bottomShuffled = shuffleDeck(bottomOfUsedDeck)
+                    bottomShuffled.forEach(card => {
+                        if (card.value === "wild") {
+                            card.color = "multiple"
+                            card.src = "./src/images/Wild.png"
+                        }
+                    })
                     return (
                         [...prevDeck, ...bottomShuffled]
                     )
@@ -256,14 +268,14 @@ function App() {
         // Update before deck runs out!
         if (remainingDeck.length === 2) {
             setRemainingDeck(prevDeck => {
-                prevDeck.forEach(card => {
+                const bottomOfUsedDeck = usedDeck.filter(item => item !== usedDeck[usedDeck.length - 1])
+                const bottomShuffled = shuffleDeck(bottomOfUsedDeck)
+                bottomShuffled.forEach(card => {
                     if (card.value === "wild") {
                         card.color = "multiple"
                         card.src = "./src/images/Wild.png"
                     }
                 })
-                const bottomOfUsedDeck = usedDeck.filter(item => item !== usedDeck[usedDeck.length - 1])
-                const bottomShuffled = shuffleDeck(bottomOfUsedDeck)
                 return (
                     [...prevDeck, ...bottomShuffled]
                 )
@@ -319,6 +331,12 @@ function App() {
                 })
                 const bottomOfUsedDeck = usedDeck.filter(item => item !== usedDeck[usedDeck.length - 1])
                 const bottomShuffled = shuffleDeck(bottomOfUsedDeck)
+                bottomShuffled.forEach(card => {
+                    if (card.value === "wild") {
+                        card.color = "multiple"
+                        card.src = "./src/images/Wild.png"
+                    }
+                })
                 return (
                     [...prevDeck, ...bottomShuffled]
                 )
@@ -463,7 +481,7 @@ function App() {
                 value={card.value}
                 color={card.color}
                 key={card.id}
-                playCard={playCard}
+                onCardClick={playCard}
                 id={card.id}
                 card={card}
             />
