@@ -1,12 +1,15 @@
-# React + Vite
+# UNO
+This is a React application which recreates an UNO game played between the user and the computer. Each player is dealt 7 cards from a shuffled deck containing all the UNO cards. The application then randomly decides which player will begin the game, to which they can place any card of their choosing from their current hand. The game continues until one player has no cards left, who will then be announced as the winner. The application keeps track of the number of wins the user accumulates until they decide to quit the game. Upon quitting, the user will have the option to save their name, score, and date played to a Firestore database. This application also includes the special cards from the original UNO game including skip, reverse, draw 2, and wild.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## React + Vite
 
-Currently, two official plugins are available:
+Running the Application
+1. Install Node.js on local machine, version 22.17.0 or later
+2. Create/navigate to a directory you want the repository to be in
+3. Clone the repository
+4. Navigate to the repository directory (should contain "src" folder, but make sure to not be inside the "src" folder)
+5. Open up a terminal if you haven't already, still making sure you are in the repository directory
+6. Run the command "npm install" for Node Modules
+7. Run the command "npm run dev" to start the application
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+#### Creator: Kyla Knauber
